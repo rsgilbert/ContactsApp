@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#90AAA4"
+    android:paddingLeft="16sp"
+    >
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="56sp"
+        android:layout_height="56sp"
+        android:background="#FFF599"
+        android:layout_gravity="center"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64sp"
+        android:paddingHorizontal="16sp"
+        android:paddingVertical="8sp"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="name"
+            android:textColor="@android:color/primary_text_light"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textViewJob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:text="my second textview"
+            android:textColor="#74746F"
+            android:textStyle="italic"/>
+    </LinearLayout>
+
+</LinearLayout>
