@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#90AAA4"
     android:paddingLeft="16sp"
     >
 
@@ -16,7 +15,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="64sp"
+        android:layout_height="80sp"
         android:paddingHorizontal="16sp"
         android:paddingVertical="8sp"
         android:orientation="vertical"
@@ -38,8 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:text="my second textview"
-            android:textColor="#74746F"
-            android:textStyle="italic"/>
+            android:textColor="#74746F"/>
     </LinearLayout>
 
 </LinearLayout>

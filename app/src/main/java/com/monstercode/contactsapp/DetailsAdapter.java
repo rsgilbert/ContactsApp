@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.monstercode.contactsapp.data.OneDetail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
     private Context context;
     private List<Detail> detailsList;
     private List<Detail> detailsListCopy = new ArrayList<>();
+    private String formerFragment = "saved";
     public DetailsAdapter(Context context, List<Detail> detailsList) {
         this.context = context;
         this.detailsList = detailsList;
@@ -61,13 +64,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
         public void onClick(View view) {
             Detail detail = detailsList.get(getAdapterPosition());
             Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("formerFragment", formerFragment);
+            OneDetail.setDetails(detail);
             context.startActivity(intent);
 
         }
     }
 
     // filter, for redisplaying page while querying
-    public void searchFor(String searchWord) {
+    public void filter(String searchWord) {
         this.detailsList.clear();
         if(searchWord.isEmpty()){
             this.detailsList.addAll(detailsListCopy);
@@ -77,13 +82,17 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
                 if(detail.getFirstname().toLowerCase().contains(searchWord)
                         || detail.getLastname().toLowerCase().contains(searchWord)
                         || detail.getJob().toLowerCase().contains(searchWord)
-                        || detail.getTel1().toLowerCase().contains(searchWord)
-                        || detail.getTel2().toLowerCase().contains(searchWord)) {
+                        || detail.getSitename().toLowerCase().contains(searchWord)
+                        || detail.getCategory().toLowerCase().contains(searchWord)) {
                     this.detailsList.add(detail);
                 }
             }
         }
         notifyDataSetChanged();
+    }
+
+    public void setFormerFragment(String fragment) {
+        formerFragment = fragment;
     }
 
 

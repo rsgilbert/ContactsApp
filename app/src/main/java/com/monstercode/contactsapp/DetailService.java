@@ -10,15 +10,14 @@ import retrofit2.http.Query;
 
 public interface DetailService {
     @GET("/contacts/")
-    public Call<List<Detail>> getDetails();
+    public Call<List<Detail>> getDetails(
+            @Query("query") String query
+    );
 
     @GET("/contacts/{detailId}")
     public Call<Detail> getDetail(
             @Path("detailId") int detailId
     );
-    @GET("/contacts?{queryString}")
-    public Call<Detail> queryDetails(
-            @Path("queryString") String query
-    );
+
 }
 

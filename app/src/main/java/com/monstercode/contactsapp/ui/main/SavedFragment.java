@@ -6,11 +6,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -29,20 +32,15 @@ public class SavedFragment extends Fragment {
     private String TAG = "SavedFragment";
     private RecyclerView recyclerView;
     private DetailsAdapter detailsAdapter;
+    private SearchView searchView;
 
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated: ");
-        setHasOptionsMenu(true);
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_saved, container, false);
-        Log.d(TAG, "onCreateView: ");
+        setHasOptionsMenu(true);
         return v;
     }
 
@@ -65,8 +63,22 @@ public class SavedFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        Log.d(TAG, "onCreateOptionsMenu: ");
         inflater.inflate(R.menu.menu_main, menu);
+        final MenuItem searchItem = menu.findItem(R.id.menu_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                detailsAdapter.filter(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                detailsAdapter.filter(s);
+                return false;
+            }
+        });
     }
 
     // for handing over parameters
@@ -85,6 +97,7 @@ public class SavedFragment extends Fragment {
             protected void onPostExecute(List<Detail> details) {
                 super.onPostExecute(details);
                 detailsAdapter = new DetailsAdapter(getActivity(), details);
+                detailsAdapter.setFormerFragment("saved");
                 recyclerView.setAdapter(detailsAdapter);
             }
 

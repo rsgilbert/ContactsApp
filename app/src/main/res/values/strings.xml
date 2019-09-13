@@ -3,4 +3,7 @@
     <string name="tab_text_1">SAVED</string>
     <string name="tab_text_2">ONLINE</string>
     <string name="search">Search Contact</string>
+    <string name="detail_label">Contact Details</string>
+    <string name="delete">delete</string>
+    <string name="save">save</string>
 </resources>

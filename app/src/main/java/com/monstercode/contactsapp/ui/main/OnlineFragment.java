@@ -10,12 +10,14 @@ import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -50,20 +52,39 @@ public class OnlineFragment extends Fragment {
     private RecyclerView recyclerView;
     private DetailsAdapter detailsAdapter;
     private final String API_BASE_URL = "https://contactsapi01.herokuapp.com";
+    private SearchView searchView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_online, container, false);
-        Log.d(TAG, "onCreateView: ");
         setHasOptionsMenu(true);
         return v;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.menu_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                queryOnlineDetails(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                queryOnlineDetails(s);
+                return false;
+            }
+        });
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -72,8 +93,9 @@ public class OnlineFragment extends Fragment {
         itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
         recyclerView.addItemDecoration(itemDecorator);
 
+
         if(isNetworkAvailable()) {
-            loadOnlineDetails();
+            queryOnlineDetails("");
         } else  {
             Toast.makeText(getActivity(), "Poor internet connection", Toast.LENGTH_LONG).show();
         }
@@ -96,7 +118,7 @@ public class OnlineFragment extends Fragment {
     }
 
     // connect to ContactsAPI online, download contacts and put them into db
-    private void loadOnlineDetails() {
+    private void queryOnlineDetails(String query) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(API_BASE_URL)
@@ -104,13 +126,14 @@ public class OnlineFragment extends Fragment {
         Retrofit retrofit = builder.client(httpClient.build()).build();
         DetailService detailService = retrofit.create(DetailService.class);
 
-        Call<List<Detail>> call = detailService.getDetails();
+        Call<List<Detail>> call = detailService.getDetails(query);
 
         call.enqueue(new Callback<List<Detail>>() {
             @Override
             public void onResponse(Call<List<Detail>> call, Response<List<Detail>> response) {
                 List<Detail> details = response.body();
                 detailsAdapter = new DetailsAdapter(getContext(), details);
+                detailsAdapter.setFormerFragment("online");
                 recyclerView.setAdapter(detailsAdapter);
             }
 
@@ -121,10 +144,5 @@ public class OnlineFragment extends Fragment {
         });
 
     }
-
-
-
-
-
 
 }
