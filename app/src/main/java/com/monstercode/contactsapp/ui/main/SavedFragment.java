@@ -1,5 +1,6 @@
 package com.monstercode.contactsapp.ui.main;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ import com.monstercode.contactsapp.DatabaseClient;
 import com.monstercode.contactsapp.Detail;
 import com.monstercode.contactsapp.DetailsAdapter;
 import com.monstercode.contactsapp.R;
+import com.monstercode.contactsapp.SettingsActivity;
 
 import java.util.List;
 
@@ -81,6 +83,17 @@ public class SavedFragment extends Fragment {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                Intent i = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(i);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
     // for handing over parameters
     public static SavedFragment newInstance(String text) {
         SavedFragment f = new SavedFragment();
@@ -111,4 +124,6 @@ public class SavedFragment extends Fragment {
         LoadTask loadTask = new LoadTask();
         loadTask.execute();
     }
+
+
 }

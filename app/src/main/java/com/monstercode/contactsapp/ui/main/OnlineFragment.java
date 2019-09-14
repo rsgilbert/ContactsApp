@@ -1,6 +1,7 @@
 package com.monstercode.contactsapp.ui.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -31,6 +32,7 @@ import com.monstercode.contactsapp.Detail;
 import com.monstercode.contactsapp.DetailService;
 import com.monstercode.contactsapp.DetailsAdapter;
 import com.monstercode.contactsapp.R;
+import com.monstercode.contactsapp.SettingsActivity;
 
 import android.widget.ListView;
 import android.widget.Toast;
@@ -99,6 +101,16 @@ public class OnlineFragment extends Fragment {
         } else  {
             Toast.makeText(getActivity(), "Poor internet connection", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_settings:
+                Intent i = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(i);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static OnlineFragment newInstance(String text) {

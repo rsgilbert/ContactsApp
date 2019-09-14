@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
 
+
+
     }
 
 
@@ -52,4 +54,18 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        searchView = findViewById(R.id.menu_search);
+        if(searchView.isIconified()){
+            searchView.setIconified(true);
+            Toast.makeText(this, "setting unconified", Toast.LENGTH_SHORT).show();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public SearchView getSearchView() {
+        return searchView;
+    }
 }

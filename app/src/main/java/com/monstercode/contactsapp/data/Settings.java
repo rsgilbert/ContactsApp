@@ -1,7 +1,7 @@
 package com.monstercode.contactsapp.data;
 
 public class Settings {
-    private static boolean clickToCall = false;
+    private static boolean clickToCall;
 
     public static boolean isClickToCall() {
         return clickToCall;
