@@ -36,7 +36,8 @@ public class DetailActivity extends AppCompatActivity {
     private LinearLayout layout_tel1, layout_tel2;
     private boolean existsInDB;
     private int hasCallPermission;
-
+    private LinearLayout getLayout_tel1;
+    private LinearLayout getLayout_tel2, getLayout_email;
 
 
     @Override
@@ -95,11 +96,13 @@ public class DetailActivity extends AppCompatActivity {
         email = findViewById(R.id.textViewEmail);
         tel1 = findViewById(R.id.textViewTel1);
         tel2 = findViewById(R.id.textViewTel2);
+        getLayout_tel1 = findViewById(R.id.layout_tel1);
+        getLayout_tel2 = findViewById(R.id.layout_tel2);
+        getLayout_email = findViewById(R.id.layout_email);
 
         final int hasCallPermissions = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
 
-        callButton1 = findViewById(R.id.callButton1);
-        callButton2 = findViewById(R.id.callButton2);
+
 
         name.setText(OneDetail.getName());
         sitename.setText(OneDetail.getSitename());
@@ -109,15 +112,8 @@ public class DetailActivity extends AppCompatActivity {
 
         Toast.makeText(this, "settings: " + Settings.isClickToCall(), Toast.LENGTH_SHORT).show();
 
-        if((OneDetail.getTel1().length() < 9)) {
-            callButton1.setEnabled(false);
-            tel1.setText("N/A");
-        }
-        if((OneDetail.getTel2().length() < 9)) {
-            callButton2.setEnabled(false);
-            tel2.setText("N/A");
-        }
-        callButton1.setOnClickListener(new View.OnClickListener() {
+
+        getLayout_tel1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String phoneNumber = OneDetail.getTel1();
@@ -142,7 +138,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-            callButton2.setOnClickListener(new View.OnClickListener() {
+            getLayout_tel2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String phoneNumber = OneDetail.getTel2();
@@ -163,6 +159,17 @@ public class DetailActivity extends AppCompatActivity {
                     }
                     phoneIntent.setData(Uri.parse("tel:" + phoneNumber));
                     startActivity(phoneIntent);
+                }
+            });
+
+            getLayout_email.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                            "mailto", OneDetail.getEmail(), null
+                    ));
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {OneDetail.getEmail()});
+                    startActivity(emailIntent);
                 }
             });
     }

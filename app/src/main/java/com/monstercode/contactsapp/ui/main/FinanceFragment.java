@@ -63,14 +63,18 @@ public class FinanceFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_online, container, false);
+        View v = inflater.inflate(R.layout.fragment_finance, container, false);
         setHasOptionsMenu(true);
+
+        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
         return v;
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
+
+        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
 
         final MenuItem searchItem = menu.findItem(R.id.menu_search);
         searchView = (SearchView) searchItem.getActionView();
@@ -91,7 +95,8 @@ public class FinanceFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        recyclerView = view.findViewById(R.id.recyclerview_details);
+        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
+        recyclerView = view.findViewById(R.id.recyclerview_finance);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // adding divider
@@ -99,22 +104,16 @@ public class FinanceFragment extends Fragment {
         itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
         recyclerView.addItemDecoration(itemDecorator);
 
-
-        queryOnlineDetails("");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_settings:
-                Intent i = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(i);
+        if(isNetworkAvailable()) {
+            queryOnlineDetails("");
+        } else {
+            Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
         }
-        return super.onOptionsItemSelected(item);
     }
 
-    public static OnlineFragment newInstance(String text) {
-        OnlineFragment f = new OnlineFragment();
+
+    public static FinanceFragment newInstance(String text) {
+        FinanceFragment f = new FinanceFragment();
         Bundle b = new Bundle();
         b.putString("msg", text);
         f.setArguments(b);
@@ -165,13 +164,12 @@ public class FinanceFragment extends Fragment {
             public void onResponse(Call<List<Finance>> call, retrofit2.Response<List<Finance>> response) {
                 List<Finance> finances = response.body();
                 adapter = new FinanceAdapter(getContext(), finances);
-                adapter.setFormerFragment("online");
                 recyclerView.setAdapter(adapter);
             }
 
             @Override
             public void onFailure(Call<List<Finance>> call, Throwable t) {
-                Toast.makeText(getContext(), "Poor connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Very Poor connection", Toast.LENGTH_SHORT).show();
             }
         });
 

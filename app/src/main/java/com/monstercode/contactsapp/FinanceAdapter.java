@@ -21,7 +21,6 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
     private Context context;
     private List<Finance> financesList;
     private List<Finance> financesListCopy = new ArrayList<>();
-    private String formerFragment = "saved";
     public FinanceAdapter(Context context, List<Finance> financesList) {
         this.context = context;
         this.financesList = financesList;
@@ -88,9 +87,6 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
         notifyDataSetChanged();
     }
 
-    public void setFormerFragment(String fragment) {
-        formerFragment = fragment;
-    }
 
 
 }

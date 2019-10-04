@@ -169,7 +169,7 @@ public class OnlineFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Detail>> call, Throwable t) {
-                Toast.makeText(getContext(), "Poor connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to connect", Toast.LENGTH_SHORT).show();
             }
         });
 

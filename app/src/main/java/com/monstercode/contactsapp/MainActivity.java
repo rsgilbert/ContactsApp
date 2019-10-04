@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private SearchView searchView;
-
-    public DetailsAdapter detailsAdapter;
     private Toolbar mToolbar;
 
     @Override
@@ -65,7 +63,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public SearchView getSearchView() {
-        return searchView;
-    }
 }

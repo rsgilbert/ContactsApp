@@ -33,6 +33,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Return a PlaceholderFragment (defined as a static inner class below).
 
         switch(position) {
+            case 0: FinanceFragment.newInstance("Finance Fragment, Instance3");
             case 1: return OnlineFragment.newInstance("Online Fragment, Instance2");
             default: return FinanceFragment.newInstance("Finance Fragment, Instance3");
         }
