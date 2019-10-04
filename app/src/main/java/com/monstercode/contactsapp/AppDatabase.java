@@ -9,7 +9,8 @@ import androidx.room.RoomDatabase;
  * as well as Data Entry Objects (dao) to use
  */
 
-@Database(entities = {Detail.class}, version = 1, exportSchema = false)
+@Database(entities = {Detail.class, Finance.class, }, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract DetailDao detailDao();
+    public abstract FinanceDao financeDao();
 }

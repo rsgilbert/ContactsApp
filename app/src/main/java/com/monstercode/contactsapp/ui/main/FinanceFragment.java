@@ -28,9 +28,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.monstercode.contactsapp.AppDatabase;
 import com.monstercode.contactsapp.DatabaseClient;
-import com.monstercode.contactsapp.Detail;
-import com.monstercode.contactsapp.DetailService;
-import com.monstercode.contactsapp.DetailsAdapter;
+import com.monstercode.contactsapp.Finance;
+import com.monstercode.contactsapp.Finance;
+import com.monstercode.contactsapp.FinanceAdapter;
+import com.monstercode.contactsapp.FinanceService;
 import com.monstercode.contactsapp.R;
 import com.monstercode.contactsapp.SettingsActivity;
 
@@ -52,10 +53,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.List;
 
-public class OnlineFragment extends Fragment {
+public class FinanceFragment extends Fragment {
     private String TAG = "OnlineFragment";
     private RecyclerView recyclerView;
-    private DetailsAdapter detailsAdapter;
+    private FinanceAdapter adapter;
     private final String API_BASE_URL = "https://contactsapi01.herokuapp.com";
     private SearchView searchView;
 
@@ -154,21 +155,22 @@ public class OnlineFragment extends Fragment {
                 .baseUrl(API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
         Retrofit retrofit = builder.client(httpClient.build()).build();
-        DetailService detailService = retrofit.create(DetailService.class);
 
-        Call<List<Detail>> call = detailService.getDetails(query);
+        FinanceService service = retrofit.create(FinanceService.class);
 
-        call.enqueue(new Callback<List<Detail>>() {
+        Call<List<Finance>> call = service.getFinance(query);
+
+        call.enqueue(new Callback<List<Finance>>() {
             @Override
-            public void onResponse(Call<List<Detail>> call, retrofit2.Response<List<Detail>> response) {
-                List<Detail> details = response.body();
-                detailsAdapter = new DetailsAdapter(getContext(), details);
-                detailsAdapter.setFormerFragment("online");
-                recyclerView.setAdapter(detailsAdapter);
+            public void onResponse(Call<List<Finance>> call, retrofit2.Response<List<Finance>> response) {
+                List<Finance> finances = response.body();
+                adapter = new FinanceAdapter(getContext(), finances);
+                adapter.setFormerFragment("online");
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
-            public void onFailure(Call<List<Detail>> call, Throwable t) {
+            public void onFailure(Call<List<Finance>> call, Throwable t) {
                 Toast.makeText(getContext(), "Poor connection", Toast.LENGTH_SHORT).show();
             }
         });

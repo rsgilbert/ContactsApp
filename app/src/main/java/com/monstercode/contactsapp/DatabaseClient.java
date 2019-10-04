@@ -16,7 +16,7 @@ public class DatabaseClient {
 
     private DatabaseClient(Context context) {
         this.context = context;
-        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "details")
+        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "db")
                 .build();
     }
 

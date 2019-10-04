@@ -11,21 +11,31 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.monstercode.contactsapp.data.Settings;
 
 public class SettingsActivity extends AppCompatActivity {
-    private SwitchCompat tapToCallSwitchCompat;
+    private SwitchCompat tapToCallSwitchCompat, addPhoneContactsSwitch;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         tapToCallSwitchCompat = findViewById(R.id.tapToCallSwitch);
+        tapToCallSwitchCompat.setChecked(Settings.isClickToCall());
 
         tapToCallSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                Toast.makeText(SettingsActivity.this, "checked: " + b, Toast.LENGTH_SHORT).show();
-                    Settings.setClickToCall(b);
-                    tapToCallSwitchCompat.setChecked(b);
+                Settings.setClickToCall(b);
             }
 
         });
+
+        addPhoneContactsSwitch = findViewById(R.id.addPhoneContactsSwitch);
+        addPhoneContactsSwitch.setChecked(Settings.isAddPhoneContacts());
+
+        addPhoneContactsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Settings.setAddPhoneContacts(b);
+            }
+        });
+
     }
 }

@@ -1,8 +1,12 @@
 package com.monstercode.contactsapp.ui.main;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -27,7 +32,10 @@ import com.monstercode.contactsapp.Detail;
 import com.monstercode.contactsapp.DetailsAdapter;
 import com.monstercode.contactsapp.R;
 import com.monstercode.contactsapp.SettingsActivity;
+import com.monstercode.contactsapp.data.OneDetail;
+import com.monstercode.contactsapp.data.Settings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SavedFragment extends Fragment {
@@ -35,8 +43,9 @@ public class SavedFragment extends Fragment {
     private RecyclerView recyclerView;
     private DetailsAdapter detailsAdapter;
     private SearchView searchView;
-
-
+    private int hasReadContactPermissions;
+    private boolean READ_CONTACTS_GRANTED;
+    private final int REQUEST_READ_CONTACTS_CODE = 1;
 
     @Nullable
     @Override
@@ -48,6 +57,10 @@ public class SavedFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        hasReadContactPermissions = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS);
+        Log.d(TAG, "onViewCreated: hasPermissions: " + hasReadContactPermissions);
+        Toast.makeText(getActivity(), "hasPermissions: " + hasReadContactPermissions, Toast.LENGTH_SHORT).show();
+
 
         recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -84,6 +97,23 @@ public class SavedFragment extends Fragment {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: Requesting read contact permission");
+        switch (requestCode) {
+            case REQUEST_READ_CONTACTS_CODE: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult: Permission granted");
+                    READ_CONTACTS_GRANTED = true;
+                    loadSavedDetails();
+                } else {
+                    READ_CONTACTS_GRANTED = false;
+                    Log.d(TAG, "onRequestPermissionsResult: Read contacts permission denied");
+                }
+            }
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_settings:
@@ -109,6 +139,9 @@ public class SavedFragment extends Fragment {
             @Override
             protected void onPostExecute(List<Detail> details) {
                 super.onPostExecute(details);
+                if(Settings.isAddPhoneContacts()) {
+                    details.addAll(getPersonalContacts());
+                }
                 detailsAdapter = new DetailsAdapter(getActivity(), details);
                 detailsAdapter.setFormerFragment("saved");
                 recyclerView.setAdapter(detailsAdapter);
@@ -123,6 +156,32 @@ public class SavedFragment extends Fragment {
         }
         LoadTask loadTask = new LoadTask();
         loadTask.execute();
+    }
+
+    private List<Detail> getPersonalContacts() {
+        List<Detail> details = new ArrayList<>();
+        if(hasReadContactPermissions == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "getPersonalContacts: has permissions: " + PackageManager.PERMISSION_GRANTED);
+            READ_CONTACTS_GRANTED = true;
+        } else {
+            Log.d(TAG, "getPersonalContacts: No permissions");
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.READ_CONTACTS}, REQUEST_READ_CONTACTS_CODE);
+            return null;
+        }
+        Cursor cursor= getActivity().getContentResolver().query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        List<String> contacts = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            OneDetail.setName(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)));
+            OneDetail.setTel1(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.Data.DATA1)));
+            details.add(OneDetail.getDetail());
+        }
+        return details;
     }
 
 

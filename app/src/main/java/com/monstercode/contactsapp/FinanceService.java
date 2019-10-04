@@ -13,9 +13,9 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
-public interface DetailService {
-    @GET("/contacts/")
-    public Call<List<Detail>> getDetails(
+public interface FinanceService {
+    @GET("/finance/")
+    public Call<List<Finance>> getFinance(
             @Query("query") String query
     );
 }
