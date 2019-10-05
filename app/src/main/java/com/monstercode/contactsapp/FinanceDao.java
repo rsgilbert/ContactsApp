@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface FinanceDao {
     @Query("SELECT * FROM finances")
-    List<Detail> getAll();
+    List<Finance> getAll();
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,7 +21,11 @@ public interface FinanceDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateAll(List<Finance> finances);
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    int updateOne(Finance finance);
+
     @Delete()
     void deleteOne(Finance finance);
+
 
 }

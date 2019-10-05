@@ -139,9 +139,6 @@ public class SavedFragment extends Fragment {
             @Override
             protected void onPostExecute(List<Detail> details) {
                 super.onPostExecute(details);
-                if(Settings.isAddPhoneContacts()) {
-                    details.addAll(getPersonalContacts());
-                }
                 detailsAdapter = new DetailsAdapter(getActivity(), details);
                 detailsAdapter.setFormerFragment("saved");
                 recyclerView.setAdapter(detailsAdapter);

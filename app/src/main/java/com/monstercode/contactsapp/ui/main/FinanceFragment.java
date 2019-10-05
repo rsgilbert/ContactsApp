@@ -1,11 +1,15 @@
 package com.monstercode.contactsapp.ui.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -28,12 +33,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.monstercode.contactsapp.AppDatabase;
 import com.monstercode.contactsapp.DatabaseClient;
+import com.monstercode.contactsapp.Detail;
+import com.monstercode.contactsapp.DetailsAdapter;
 import com.monstercode.contactsapp.Finance;
 import com.monstercode.contactsapp.Finance;
 import com.monstercode.contactsapp.FinanceAdapter;
+import com.monstercode.contactsapp.FinanceSavedAdapter;
 import com.monstercode.contactsapp.FinanceService;
 import com.monstercode.contactsapp.R;
 import com.monstercode.contactsapp.SettingsActivity;
+import com.monstercode.contactsapp.data.OneDetail;
+import com.monstercode.contactsapp.data.Settings;
 
 import android.widget.ListView;
 import android.widget.Toast;
@@ -54,19 +64,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.List;
 
 public class FinanceFragment extends Fragment {
-    private String TAG = "OnlineFragment";
-    private RecyclerView recyclerView;
-    private FinanceAdapter adapter;
+    private String TAG = "FinanceFragment";
+    private RecyclerView recyclerView, recyclerViewSaved;
+    private FinanceAdapter adapter, savedAdapter;
     private final String API_BASE_URL = "https://contactsapi01.herokuapp.com";
     private SearchView searchView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_finance, container, false);
+        View v = inflater.inflate(R.layout.fragment_online, container, false);
         setHasOptionsMenu(true);
-
-        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
         return v;
     }
 
@@ -82,12 +90,14 @@ public class FinanceFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 queryOnlineDetails(s);
+                savedAdapter.filter(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 queryOnlineDetails(s);
+                savedAdapter.filter(s);
                 return false;
             }
         });
@@ -95,14 +105,21 @@ public class FinanceFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
-        recyclerView = view.findViewById(R.id.recyclerview_finance);
+        Toast.makeText(getActivity(), "loading saved", Toast.LENGTH_SHORT).show();
+        loadSavedDetails();
+        Toast.makeText(getActivity(), " saved", Toast.LENGTH_SHORT).show();
+        recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // adding divider
         DividerItemDecoration itemDecorator =  new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
         recyclerView.addItemDecoration(itemDecorator);
+
+        recyclerViewSaved = view.findViewById(R.id.recyclerview_saved);
+        recyclerViewSaved.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewSaved.addItemDecoration(itemDecorator);
+
 
         if(isNetworkAvailable()) {
             queryOnlineDetails("");
@@ -174,5 +191,28 @@ public class FinanceFragment extends Fragment {
         });
 
     }
+
+    private void loadSavedDetails() {
+        Log.d(TAG, "loadSavedDetails: ");
+        class LoadTask extends AsyncTask<Void, Void, List<Finance>> {
+            @Override
+            protected void onPostExecute(List<Finance> finances) {
+                super.onPostExecute(finances);
+                savedAdapter = new FinanceAdapter(getActivity(), finances);
+                recyclerViewSaved.setAdapter(savedAdapter);
+            }
+
+            @Override
+            protected List<Finance> doInBackground(Void... voids) {
+                AppDatabase appDatabase = DatabaseClient.getInstance(getContext())
+                        .getAppDatabase();
+                return appDatabase.financeDao().getAll();
+            }
+        }
+        LoadTask loadTask = new LoadTask();
+        loadTask.execute();
+    }
+
+
 
 }

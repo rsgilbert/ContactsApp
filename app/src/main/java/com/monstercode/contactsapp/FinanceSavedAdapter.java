@@ -13,18 +13,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.monstercode.contactsapp.data.OneDetail;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.FinancesViewHolder> {
+public class FinanceSavedAdapter extends RecyclerView.Adapter<FinanceSavedAdapter.FinancesViewHolder> {
     private Context context;
     private List<Finance> financesList;
     private List<Finance> financesListCopy = new ArrayList<>();
-    public FinanceAdapter(Context context, List<Finance> financesList) {
+    public FinanceSavedAdapter(Context context, List<Finance> financesList) {
         this.context = context;
         this.financesList = financesList;
         this.financesListCopy.addAll(financesList);

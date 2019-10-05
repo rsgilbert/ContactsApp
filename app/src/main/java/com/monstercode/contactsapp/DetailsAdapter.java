@@ -2,10 +2,13 @@ package com.monstercode.contactsapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,11 +65,30 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
 
         @Override
         public void onClick(View view) {
-            Detail detail = detailsList.get(getAdapterPosition());
-            Intent intent = new Intent(context, DetailActivity.class);
-            intent.putExtra("formerFragment", formerFragment);
-            OneDetail.setDetails(detail);
-            context.startActivity(intent);
+            final Detail detail = detailsList.get(getAdapterPosition());
+            class SaveTask extends AsyncTask<Void, Void, Void> {
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra("Detail", detail);
+                    context.startActivity(intent);
+                }
+
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
+                    int update = db.detailDao().updateOne(detail);
+                    Log.d("FINANCEADA", "updates " + update);
+                    if(update == 0) {
+                        db.detailDao().insertOne(detail);
+                        Log.d("FINANCEADA", "inserts " + update);
+                    }
+                    return null;
+                }
+            }
+            SaveTask saveTask = new SaveTask();
+            saveTask.execute();
 
         }
     }

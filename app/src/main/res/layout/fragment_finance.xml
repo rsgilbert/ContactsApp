@@ -8,8 +8,13 @@
         android:layout_height="wrap_content"
         android:text="Your finances"/>
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_saved"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_finance"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
 

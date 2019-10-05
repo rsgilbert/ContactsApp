@@ -31,6 +31,8 @@ import com.monstercode.contactsapp.DatabaseClient;
 import com.monstercode.contactsapp.Detail;
 import com.monstercode.contactsapp.DetailService;
 import com.monstercode.contactsapp.DetailsAdapter;
+import com.monstercode.contactsapp.Finance;
+import com.monstercode.contactsapp.FinanceAdapter;
 import com.monstercode.contactsapp.R;
 import com.monstercode.contactsapp.SettingsActivity;
 
@@ -54,8 +56,8 @@ import java.util.List;
 
 public class OnlineFragment extends Fragment {
     private String TAG = "OnlineFragment";
-    private RecyclerView recyclerView;
-    private DetailsAdapter detailsAdapter;
+    private RecyclerView recyclerView, recyclerViewSaved;
+    private DetailsAdapter detailsAdapter, savedAdapter;
     private final String API_BASE_URL = "https://contactsapi01.herokuapp.com";
     private SearchView searchView;
 
@@ -76,12 +78,14 @@ public class OnlineFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                savedAdapter.filter(s);
                 queryOnlineDetails(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
+                savedAdapter.filter(s);
                 queryOnlineDetails(s);
                 return false;
             }
@@ -90,8 +94,10 @@ public class OnlineFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        loadSavedDetails();
         recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 
         // adding divider
         DividerItemDecoration itemDecorator =  new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
@@ -99,7 +105,15 @@ public class OnlineFragment extends Fragment {
         recyclerView.addItemDecoration(itemDecorator);
 
 
-        queryOnlineDetails("");
+        recyclerViewSaved = view.findViewById(R.id.recyclerview_saved);
+        recyclerViewSaved.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewSaved.addItemDecoration(itemDecorator);
+
+        if(isNetworkAvailable()) {
+            queryOnlineDetails("");
+        } else {
+            Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -173,6 +187,26 @@ public class OnlineFragment extends Fragment {
             }
         });
 
+    }
+    private void loadSavedDetails() {
+        Log.d(TAG, "loadSavedDetails: ");
+        class LoadTask extends AsyncTask<Void, Void, List<Detail>> {
+            @Override
+            protected void onPostExecute(List<Detail> details) {
+                super.onPostExecute(details);
+                savedAdapter = new DetailsAdapter(getActivity(), details);
+                recyclerViewSaved.setAdapter(savedAdapter);
+            }
+
+            @Override
+            protected List<Detail> doInBackground(Void... voids) {
+                AppDatabase appDatabase = DatabaseClient.getInstance(getContext())
+                        .getAppDatabase();
+                return appDatabase.detailDao().getAll();
+            }
+        }
+        LoadTask loadTask = new LoadTask();
+        loadTask.execute();
     }
 
 }

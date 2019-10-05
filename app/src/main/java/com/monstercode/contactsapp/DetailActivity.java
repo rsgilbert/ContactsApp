@@ -1,6 +1,7 @@
 package com.monstercode.contactsapp;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -20,17 +21,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 
-import com.monstercode.contactsapp.data.OneDetail;
-import com.monstercode.contactsapp.data.Settings;
 
 import java.util.List;
 import java.util.Set;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements ContactDialogFragment.MyDialogListener {
     private String TAG = "DetailActivity";
     private TextView name, sitename, email, tel1, tel2, category;
-    private Button actionButton, callButton1, callButton2, deleteButton;
     private static final int REQUEST_CODE_CALL_PHONE = 1;
     private static boolean CALL_PHONE_GRANTED = false;
     private LinearLayout layout_tel1, layout_tel2;
@@ -38,7 +37,8 @@ public class DetailActivity extends AppCompatActivity {
     private int hasCallPermission;
     private LinearLayout getLayout_tel1;
     private LinearLayout getLayout_tel2, getLayout_email;
-
+    private boolean isCallTel1 = false;
+    private Detail detail;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -56,33 +56,18 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        String formerFragment = getIntent().getStringExtra("formerFragment");
-        if(formerFragment.equals("saved")) {
-            getMenuInflater().inflate(R.menu.menu_details_delete, menu);
-        } else if(formerFragment.equals("online")) {
-            getMenuInflater().inflate(R.menu.menu_details_save, menu);
-        }
-        return true;
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.menu_delete) {
             Log.d(TAG, "onOptionsItemSelected: selected delete");
-            deleteDetail();
+//            deleteDetail(detail);
             return true;
-        } else if (item.getItemId() == R.id.menu_save) {
-            Log.d(TAG, "onOptionsItemSelected: selected save");
-            saveDetail();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
         }
+        else return super.onOptionsItemSelected(item);
     }
 
 
@@ -100,65 +85,30 @@ public class DetailActivity extends AppCompatActivity {
         getLayout_tel2 = findViewById(R.id.layout_tel2);
         getLayout_email = findViewById(R.id.layout_email);
 
-        final int hasCallPermissions = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+        detail = (Detail) getIntent().getSerializableExtra("Detail");
 
-
-
-        name.setText(OneDetail.getName());
-        sitename.setText(OneDetail.getSitename());
-        tel1.setText(OneDetail.getTel1());
-        tel2.setText(OneDetail.getTel2());
-        email.setText(OneDetail.getEmail());
-
-        Toast.makeText(this, "settings: " + Settings.isClickToCall(), Toast.LENGTH_SHORT).show();
+        name.setText(detail.getFirstname() + " " + detail.getLastname());
+        sitename.setText(detail.getSitename());
+        tel1.setText(detail.getTel1());
+        tel2.setText(detail.getTel2());
+        email.setText(detail.getEmail());
 
 
         getLayout_tel1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String phoneNumber = OneDetail.getTel1();
-                Intent phoneIntent;
-                if (Settings.isClickToCall()) {
+                isCallTel1 = true;
+                sendDialog();
 
-                    phoneIntent = new Intent(Intent.ACTION_CALL);
-                    if(hasCallPermissions == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onClick: has call permissions");
-                        CALL_PHONE_GRANTED = true;
-                    } else {
-                        Log.d(TAG, "onClick: no call permissions, requesting");
-                        ActivityCompat.requestPermissions(DetailActivity.this, new String[] {Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL_PHONE);
-                        return;
-                    }
-                }
-                else {
-                    phoneIntent = new Intent(Intent.ACTION_DIAL);
-                }
-                phoneIntent.setData(Uri.parse("tel:" + phoneNumber));
-                startActivity(phoneIntent);
             }
         });
 
             getLayout_tel2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String phoneNumber = OneDetail.getTel2();
-                    Intent phoneIntent;
-                    if (Settings.isClickToCall()) {
-                        phoneIntent = new Intent(Intent.ACTION_CALL);
-                        if(hasCallPermissions == PackageManager.PERMISSION_GRANTED) {
-                            Log.d(TAG, "onClick: has call permissions");
-                            CALL_PHONE_GRANTED = true;
-                        } else {
-                            Log.d(TAG, "onClick: no call permissions, requesting");
-                            ActivityCompat.requestPermissions(DetailActivity.this, new String[] {Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL_PHONE);
-                            return;
-                        }
-                    }
-                    else {
-                        phoneIntent = new Intent(Intent.ACTION_DIAL);
-                    }
-                    phoneIntent.setData(Uri.parse("tel:" + phoneNumber));
-                    startActivity(phoneIntent);
+                    isCallTel1 = false;
+                    sendDialog();
+
                 }
             });
 
@@ -166,53 +116,51 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                            "mailto", OneDetail.getEmail(), null
+                            "mailto", detail.getEmail(), null
                     ));
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {OneDetail.getEmail()});
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {detail.getEmail()});
                     startActivity(emailIntent);
                 }
             });
     }
 
-    private void saveDetail() {
-        class SaveTask extends AsyncTask<Void, Void, Void> {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                Intent i = new Intent(DetailActivity.this, MainActivity.class);
-                startActivity(i);
+    @Override
+    public void onDialogCall(DialogFragment df) {
+        Intent phoneIntent;
+        phoneIntent = new Intent(Intent.ACTION_CALL);
+        if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CALL_PHONE)
+                == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onClick: has call permissions");
+            if(isCallTel1) {
+                phoneIntent.setData(Uri.parse("tel:" + detail.getTel1()));
+            } else {
+                phoneIntent.setData(Uri.parse("tel:" + detail.getTel2()));
             }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                AppDatabase appDatabase = DatabaseClient.getInstance(DetailActivity.this)
-                        .getAppDatabase();
-                appDatabase.detailDao().insertOne(OneDetail.getDetail());
-                return null;
-            }
+            startActivity(phoneIntent);
+        } else {
+            Log.d(TAG, "onClick: no call permissions, requesting");
+            ActivityCompat.requestPermissions(DetailActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL_PHONE);
+            return;
         }
-        SaveTask saveTask = new SaveTask();
-        saveTask.execute();
     }
-    private void deleteDetail() {
-        class DeleteTask extends AsyncTask<Void, Void, Void> {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                Intent i = new Intent(DetailActivity.this, MainActivity.class);
-                startActivity(i);
-            }
 
-            @Override
-            protected Void doInBackground(Void... voids) {
-                AppDatabase appDatabase = DatabaseClient.getInstance(DetailActivity.this)
-                        .getAppDatabase();
-                appDatabase.detailDao().deleteOne(OneDetail.getDetail());
-                return null;
-            }
+    @Override
+    public void onDialogSms(DialogFragment df) {
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+        if(isCallTel1) {
+            smsIntent.setData(Uri.parse("sms:" + detail.getTel1()));
+            startActivity(smsIntent);
+        } else {
+            smsIntent.setData(Uri.parse("sms:" + detail.getTel2()));
+            startActivity(smsIntent);
         }
-        DeleteTask deleteTask = new DeleteTask();
-        deleteTask.execute();
+
     }
+
+    public void sendDialog() {
+        DialogFragment dialogFragment = new ContactDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "My Contact Dialog Fragment");
+    }
+
 
 }

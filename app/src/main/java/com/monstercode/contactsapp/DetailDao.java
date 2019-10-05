@@ -21,6 +21,9 @@ public interface DetailDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateAll(List<Detail> details);
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    int updateOne(Detail detail);
+
     @Delete()
     void deleteOne(Detail detail);
 

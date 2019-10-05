@@ -27,6 +27,11 @@
             android:theme="@style/AppTheme">
 
         </activity>
+
+        <activity android:name=".FinanceActivity"
+            android:label="@string/finance_label"
+            android:theme="@style/AppTheme">
+        </activity>
         <activity android:name=".SettingsActivity"
             android:label="Settings"
             android:theme="@style/AppTheme"/>
