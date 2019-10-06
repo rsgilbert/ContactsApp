@@ -32,9 +32,11 @@
             android:label="@string/finance_label"
             android:theme="@style/AppTheme">
         </activity>
-        <activity android:name=".SettingsActivity"
-            android:label="Settings"
-            android:theme="@style/AppTheme"/>
+
+        <activity android:name=".LoginActivity"
+            android:label="@string/login_label"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

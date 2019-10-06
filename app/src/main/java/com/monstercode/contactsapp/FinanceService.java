@@ -2,7 +2,6 @@ package com.monstercode.contactsapp;
 
 import android.content.SharedPreferences;
 
-import com.monstercode.contactsapp.data.Settings;
 
 import java.util.List;
 

@@ -59,18 +59,6 @@ public class DetailActivity extends AppCompatActivity implements ContactDialogFr
     }
 
 
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.menu_delete) {
-            Log.d(TAG, "onOptionsItemSelected: selected delete");
-//            deleteDetail(detail);
-            return true;
-        }
-        else return super.onOptionsItemSelected(item);
-    }
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,25 +91,41 @@ public class DetailActivity extends AppCompatActivity implements ContactDialogFr
             }
         });
 
-            getLayout_tel2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    isCallTel1 = false;
-                    sendDialog();
+        getLayout_tel2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isCallTel1 = false;
+                sendDialog();
 
-                }
-            });
+            }
+        });
 
-            getLayout_email.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                            "mailto", detail.getEmail(), null
-                    ));
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {detail.getEmail()});
-                    startActivity(emailIntent);
-                }
-            });
+        getLayout_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", detail.getEmail(), null
+                ));
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {detail.getEmail()});
+                startActivity(emailIntent);
+            }
+        });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menu_delete) {
+            Log.d(TAG, "onOptionsItemSelected: selected delete");
+            deleteDetail();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -160,6 +164,27 @@ public class DetailActivity extends AppCompatActivity implements ContactDialogFr
     public void sendDialog() {
         DialogFragment dialogFragment = new ContactDialogFragment();
         dialogFragment.show(getSupportFragmentManager(), "My Contact Dialog Fragment");
+    }
+
+    private void deleteDetail() {
+        class DeleteTask extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Intent i = new Intent(DetailActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                AppDatabase appDatabase = DatabaseClient.getInstance(DetailActivity.this)
+                        .getAppDatabase();
+                appDatabase.detailDao().deleteOne(detail);
+                return null;
+            }
+        }
+        DeleteTask deleteTask = new DeleteTask();
+        deleteTask.execute();
     }
 
 

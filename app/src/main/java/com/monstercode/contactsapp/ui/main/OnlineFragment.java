@@ -1,13 +1,11 @@
 package com.monstercode.contactsapp.ui.main;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,22 +23,14 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.monstercode.contactsapp.AppDatabase;
 import com.monstercode.contactsapp.DatabaseClient;
 import com.monstercode.contactsapp.Detail;
 import com.monstercode.contactsapp.DetailService;
 import com.monstercode.contactsapp.DetailsAdapter;
-import com.monstercode.contactsapp.Finance;
-import com.monstercode.contactsapp.FinanceAdapter;
 import com.monstercode.contactsapp.R;
-import com.monstercode.contactsapp.SettingsActivity;
-
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Interceptor;
@@ -51,8 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import java.util.List;
 
 public class OnlineFragment extends Fragment {
     private String TAG = "OnlineFragment";
@@ -82,7 +70,6 @@ public class OnlineFragment extends Fragment {
                 queryOnlineDetails(s);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
                 savedAdapter.filter(s);
@@ -98,12 +85,10 @@ public class OnlineFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
         // adding divider
         DividerItemDecoration itemDecorator =  new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
         recyclerView.addItemDecoration(itemDecorator);
-
 
         recyclerViewSaved = view.findViewById(R.id.recyclerview_saved);
         recyclerViewSaved.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -116,15 +101,7 @@ public class OnlineFragment extends Fragment {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_settings:
-                Intent i = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(i);
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
     public static OnlineFragment newInstance(String text) {
         OnlineFragment f = new OnlineFragment();
@@ -133,6 +110,13 @@ public class OnlineFragment extends Fragment {
         f.setArguments(b);
         return f;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadSavedDetails();
+    }
+
 
     // check for network connectivity
     private boolean isNetworkAvailable() {
@@ -160,8 +144,6 @@ public class OnlineFragment extends Fragment {
                 return response;
             }
         }
-
-
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(new HeaderInterceptor());
         Retrofit.Builder builder = new Retrofit.Builder()
@@ -177,7 +159,6 @@ public class OnlineFragment extends Fragment {
             public void onResponse(Call<List<Detail>> call, retrofit2.Response<List<Detail>> response) {
                 List<Detail> details = response.body();
                 detailsAdapter = new DetailsAdapter(getContext(), details);
-                detailsAdapter.setFormerFragment("online");
                 recyclerView.setAdapter(detailsAdapter);
             }
 

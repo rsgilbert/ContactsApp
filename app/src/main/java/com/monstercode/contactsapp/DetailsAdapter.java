@@ -14,8 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.monstercode.contactsapp.data.OneDetail;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
     private Context context;
     private List<Detail> detailsList;
     private List<Detail> detailsListCopy = new ArrayList<>();
-    private String formerFragment = "saved";
+
     public DetailsAdapter(Context context, List<Detail> detailsList) {
         this.context = context;
         this.detailsList = detailsList;
@@ -79,10 +77,8 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
                 protected Void doInBackground(Void... voids) {
                     AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
                     int update = db.detailDao().updateOne(detail);
-                    Log.d("FINANCEADA", "updates " + update);
                     if(update == 0) {
                         db.detailDao().insertOne(detail);
-                        Log.d("FINANCEADA", "inserts " + update);
                     }
                     return null;
                 }
@@ -111,10 +107,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
             }
         }
         notifyDataSetChanged();
-    }
-
-    public void setFormerFragment(String fragment) {
-        formerFragment = fragment;
     }
 
 

@@ -1,17 +1,11 @@
 package com.monstercode.contactsapp.ui.main;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,33 +17,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.monstercode.contactsapp.AppDatabase;
 import com.monstercode.contactsapp.DatabaseClient;
-import com.monstercode.contactsapp.Detail;
-import com.monstercode.contactsapp.DetailsAdapter;
-import com.monstercode.contactsapp.Finance;
 import com.monstercode.contactsapp.Finance;
 import com.monstercode.contactsapp.FinanceAdapter;
-import com.monstercode.contactsapp.FinanceSavedAdapter;
 import com.monstercode.contactsapp.FinanceService;
 import com.monstercode.contactsapp.R;
-import com.monstercode.contactsapp.SettingsActivity;
-import com.monstercode.contactsapp.data.OneDetail;
-import com.monstercode.contactsapp.data.Settings;
-
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Interceptor;
@@ -60,8 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import java.util.List;
 
 public class FinanceFragment extends Fragment {
     private String TAG = "FinanceFragment";
@@ -81,10 +60,7 @@ public class FinanceFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
-
-        Toast.makeText(getActivity(), "Howdy", Toast.LENGTH_SHORT).show();
-
-        final MenuItem searchItem = menu.findItem(R.id.menu_search);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -105,9 +81,7 @@ public class FinanceFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Toast.makeText(getActivity(), "loading saved", Toast.LENGTH_SHORT).show();
         loadSavedDetails();
-        Toast.makeText(getActivity(), " saved", Toast.LENGTH_SHORT).show();
         recyclerView = view.findViewById(R.id.recyclerview_details);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -128,6 +102,11 @@ public class FinanceFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadSavedDetails();
+    }
 
     public static FinanceFragment newInstance(String text) {
         FinanceFragment f = new FinanceFragment();
@@ -193,7 +172,6 @@ public class FinanceFragment extends Fragment {
     }
 
     private void loadSavedDetails() {
-        Log.d(TAG, "loadSavedDetails: ");
         class LoadTask extends AsyncTask<Void, Void, List<Finance>> {
             @Override
             protected void onPostExecute(List<Finance> finances) {
@@ -212,7 +190,4 @@ public class FinanceFragment extends Fragment {
         LoadTask loadTask = new LoadTask();
         loadTask.execute();
     }
-
-
-
 }

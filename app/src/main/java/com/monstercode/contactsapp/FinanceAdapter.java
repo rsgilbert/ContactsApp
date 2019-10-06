@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.monstercode.contactsapp.data.OneDetail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,10 +78,8 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
                 protected Void doInBackground(Void... voids) {
                     AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
                     int update = db.financeDao().updateOne(finance);
-                    Log.d("FINANCEADA", "updates " + update);
                     if(update == 0) {
                         db.financeDao().insertOne(finance);
-                        Log.d("FINANCEADA", "inserts " + update);
                     }
                     return null;
                 }

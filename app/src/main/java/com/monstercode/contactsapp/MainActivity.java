@@ -1,5 +1,8 @@
 package com.monstercode.contactsapp;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -10,6 +13,7 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,8 +31,16 @@ public class MainActivity extends AppCompatActivity {
     private SearchView searchView;
     private Toolbar mToolbar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.preferences_filename), Context.MODE_PRIVATE);
+        if(!sharedPref.getString("token", "None").equals("badass")) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
@@ -40,27 +52,18 @@ public class MainActivity extends AppCompatActivity {
 
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-
-
-
-
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onBackPressed() {
         searchView = findViewById(R.id.menu_search);
         if(searchView.isIconified()){
             searchView.setIconified(true);
-            Toast.makeText(this, "setting unconified", Toast.LENGTH_SHORT).show();
         } else {
             super.onBackPressed();
         }
     }
+
 
 }

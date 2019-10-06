@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="Login with TSC"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="30sp" />
+    <EditText
+        android:id="@+id/editViewEmail"
+        android:layout_width="match_parent"
+        android:layout_height="64sp"
+        android:inputType="textEmailAddress"
+        android:hint="Email Address"/>
+
+    <EditText
+        android:id="@+id/editViewPassword"
+        android:layout_width="match_parent"
+        android:layout_height="64sp"
+        android:fontFamily="sans-serif"
+        android:inputType="textPassword"
+        android:hint="Password"/>
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"/>
+
+</LinearLayout>

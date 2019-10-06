@@ -2,11 +2,14 @@
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Saved"
+        android:layout_height="32dp"
+        android:gravity="center_vertical"
+        android:text="Saved Contacts"
+        android:background="#ccc"
         android:textStyle="bold"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_saved"
@@ -15,9 +18,12 @@ android:orientation="vertical" android:layout_width="match_parent"
     <TextView
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_height="wrap_content"
-        android:text="Online"
+        android:background="#ccc"
+        android:layout_height="32dp"
+        android:gravity="center_vertical"
+        android:text="Online Contacts"
         android:textStyle="bold"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_details"
         android:layout_width="match_parent"

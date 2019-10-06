@@ -4,8 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +26,25 @@ public class FinanceActivity extends AppCompatActivity {
     private Finance finance;
 
     private static final int REQUEST_CODE_CALL_PHONE = 1;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.menu_delete) {
+            Log.d(TAG, "onOptionsItemSelected: selected delete");
+            deleteDetail();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,5 +99,27 @@ public class FinanceActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+
+    private void deleteDetail() {
+        class DeleteTask extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Intent i = new Intent(FinanceActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                AppDatabase appDatabase = DatabaseClient.getInstance(FinanceActivity.this)
+                        .getAppDatabase();
+                appDatabase.financeDao().deleteOne(finance);
+                return null;
+            }
+        }
+        DeleteTask deleteTask = new DeleteTask();
+        deleteTask.execute();
     }
 }
