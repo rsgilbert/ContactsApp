@@ -19,28 +19,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.Date;
+
 
 public class FinanceActivity extends AppCompatActivity {
     private TextView textViewName, textViewDuty, textViewRoom, textViewContact;
     public static final String TAG = "Finance Activity";
     private Finance finance;
+    private Long currentTime = new Date().getTime();
 
     private static final int REQUEST_CODE_CALL_PHONE = 1;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_details, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.menu_delete) {
-            Log.d(TAG, "onOptionsItemSelected: selected delete");
-            deleteDetail();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.menu_delete: {
+                deleteFinance();
+                return true;
+            }
+            case R.id.menu_save: {
+                saveFinance();
+                return true;
+            }
+            case android.R.id.home: {
+                super.onBackPressed();
+            }
+            default: return super.onOptionsItemSelected(item);
         }
     }
 
@@ -50,6 +54,9 @@ public class FinanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finance);
 
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         finance = (Finance) getIntent().getSerializableExtra("Finance");
 
         textViewName = findViewById(R.id.name);
@@ -57,10 +64,10 @@ public class FinanceActivity extends AppCompatActivity {
         textViewContact = findViewById(R.id.contact);
         textViewRoom = findViewById(R.id.room);
 
-        textViewName.setText(textViewName.getText() + " " + finance.getName());
-        textViewDuty.setText(textViewDuty.getText() + " " + finance.getDuty());
-        textViewContact.setText(textViewContact.getText() + " " + finance.getContact());
-        textViewRoom.setText(textViewRoom.getText() + " " + finance.getRoom());
+        textViewName.setText(finance.getName());
+        textViewDuty.setText(finance.getDuty());
+        textViewContact.setText(finance.getContact());
+        textViewRoom.setText(finance.getRoom());
 
         textViewContact.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +75,43 @@ public class FinanceActivity extends AppCompatActivity {
                 makePhoneCall();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final Menu finalMenu = menu;
+        class GetTask extends AsyncTask<Void, Void, Finance> {
+            @Override
+            protected void onPostExecute(Finance finance) {
+                super.onPostExecute(finance);
+                if(finance.getLastChecked() != null) {
+                    finance.setLastChecked(currentTime);
+                    getMenuInflater().inflate(R.menu.menu_details_delete, finalMenu);
+                } else {
+                    getMenuInflater().inflate(R.menu.menu_details_save, finalMenu);
+                }
+            }
+
+            @Override
+            protected Finance doInBackground(Void... voids) {
+                AppDatabase db = DatabaseClient.getInstance(FinanceActivity.this).getAppDatabase();
+                Finance newFinance = db.financeDao().getOne(finance.getId());
+                if(newFinance != null) {
+                    Date date = new Date();
+                    Long time = date.getTime();
+                    newFinance.setLastChecked(time);
+                    db.financeDao().updateOne(newFinance);
+                    return newFinance;
+                } else return finance;
+            }
+        }
+        if (finance.getLastChecked() == null) {
+            GetTask getTask = new GetTask();
+            getTask.execute();
+        } else {
+            getMenuInflater().inflate(R.menu.menu_details_delete, finalMenu);
+        }
+        return true;
     }
 
     public void makePhoneCall() {
@@ -101,14 +145,12 @@ public class FinanceActivity extends AppCompatActivity {
         }
     }
 
-
-    private void deleteDetail() {
+    private void deleteFinance() {
         class DeleteTask extends AsyncTask<Void, Void, Void> {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                Intent i = new Intent(FinanceActivity.this, MainActivity.class);
-                startActivity(i);
+                FinanceActivity.this.onBackPressed();
             }
 
             @Override
@@ -122,4 +164,25 @@ public class FinanceActivity extends AppCompatActivity {
         DeleteTask deleteTask = new DeleteTask();
         deleteTask.execute();
     }
+    private void saveFinance() {
+        class SaveTask extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                FinanceActivity.this.onBackPressed();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                AppDatabase appDatabase = DatabaseClient.getInstance(FinanceActivity.this)
+                        .getAppDatabase();
+                finance.setLastChecked(currentTime);
+                appDatabase.financeDao().insertOne(finance);
+                return null;
+            }
+        }
+        SaveTask saveTask = new SaveTask();
+        saveTask.execute();
+    }
+
 }

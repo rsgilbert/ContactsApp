@@ -14,6 +14,8 @@ public interface FinanceDao {
     @Query("SELECT * FROM finances")
     List<Finance> getAll();
 
+    @Query("SELECT * FROM finances WHERE id = :financeId")
+    Finance getOne(int financeId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertOne(Finance finance);

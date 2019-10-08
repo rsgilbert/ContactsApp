@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.FinancesViewHolder> {
     private Context context;
@@ -40,6 +42,7 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
         Finance finance = financesList.get(position);
         holder.textViewName.setText(finance.getName());
         holder.textViewJob.setText(finance.getRoom());
+        holder.profileImage.setImageResource(R.drawable.ministry_of_finance);
     }
 
     @Override
@@ -50,12 +53,14 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
 
     class FinancesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textViewName, textViewJob;
+        CircleImageView profileImage;
 
         public FinancesViewHolder(View itemView) {
             super(itemView);
 
             textViewName = itemView.findViewById(R.id.textViewName);
             textViewJob = itemView.findViewById(R.id.textViewJob);
+            profileImage = itemView.findViewById(R.id.profile_image);
 
             itemView.setOnClickListener(this);
 
@@ -64,28 +69,9 @@ public class FinanceAdapter extends RecyclerView.Adapter<FinanceAdapter.Finances
         @Override
         public void onClick(View view) {
             final Finance finance = financesList.get(getAdapterPosition());
-            Toast.makeText(context, "updates: or inserted" , Toast.LENGTH_SHORT).show();
-            class SaveTask extends AsyncTask<Void, Void, Void> {
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    super.onPostExecute(aVoid);
-                    Intent intent = new Intent(context, FinanceActivity.class);
-                    intent.putExtra("Finance", finance); // finance must be serializable
-                    context.startActivity(intent);
-                }
-
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
-                    int update = db.financeDao().updateOne(finance);
-                    if(update == 0) {
-                        db.financeDao().insertOne(finance);
-                    }
-                    return null;
-                }
-            }
-            SaveTask saveTask = new SaveTask();
-            saveTask.execute();
+            Intent intent = new Intent(context, FinanceActivity.class);
+            intent.putExtra("Finance", finance); // finance must be serializable
+            context.startActivity(intent);
         }
 
 

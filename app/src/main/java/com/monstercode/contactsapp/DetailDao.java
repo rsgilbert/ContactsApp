@@ -11,9 +11,11 @@ import java.util.List;
 
 @Dao
 public interface DetailDao {
-    @Query("SELECT * FROM details")
+    @Query("SELECT * FROM details ORDER BY lastChecked DESC")
     List<Detail> getAll();
 
+    @Query("SELECT * FROM details WHERE id = :detailId")
+    Detail getOne(int detailId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertOne(Detail detail);

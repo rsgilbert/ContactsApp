@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical" android:layout_width="match_parent"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/activity_horizontal_margin">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+<LinearLayout
+android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
+        android:paddingHorizontal="@dimen/activity_horizontal_margin"
+        android:id="@+id/textview_saved"
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:gravity="center_vertical"
         android:text="Saved Contacts"
-        android:background="#ccc"
+        android:background="@color/newDark"
         android:textStyle="bold"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_saved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
+        android:paddingHorizontal="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:background="#ccc"
+        android:background="@color/newDark"
         android:layout_height="32dp"
         android:gravity="center_vertical"
         android:text="Online Contacts"
@@ -29,4 +35,4 @@ android:orientation="vertical" android:layout_width="match_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>
-
+</androidx.core.widget.NestedScrollView>

@@ -5,13 +5,22 @@
     android:gravity="center"
     android:layout_margin="@dimen/activity_horizontal_margin">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileMedium"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ministry_of_finance"/>
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:text="Login with TSC"
         android:gravity="center"
         android:textStyle="bold"
-        android:textSize="30sp" />
+        android:textSize="24sp" />
     <EditText
         android:id="@+id/editViewEmail"
         android:layout_width="match_parent"

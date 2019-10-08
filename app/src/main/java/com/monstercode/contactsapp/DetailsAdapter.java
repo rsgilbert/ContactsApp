@@ -10,18 +10,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsViewHolder> {
     private Context context;
     private List<Detail> detailsList;
     private List<Detail> detailsListCopy = new ArrayList<>();
+
 
     public DetailsAdapter(Context context, List<Detail> detailsList) {
         this.context = context;
@@ -40,6 +42,11 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
         Detail detail = detailsList.get(position);
         holder.textViewName.setText(detail.getFirstname() + " " + detail.getLastname());
         holder.textViewJob.setText(detail.getJob() +", " + detail.getSitename());
+        if (detail.getSitename().toLowerCase().contains("energy")) {
+            holder.profileImage.setImageResource(R.drawable.ministry_of_finance);
+        } else if(detail.getSitename().toLowerCase().contains("lang")) {
+            holder.profileImage.setImageResource(R.drawable.court_of_arms);
+        }
     }
 
     @Override
@@ -47,16 +54,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
         return detailsList.size();
     }
 
-
     class detailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textViewName, textViewJob;
+        CircleImageView profileImage;
 
         public detailsViewHolder(View itemView) {
             super(itemView);
-
             textViewName = itemView.findViewById(R.id.textViewName);
             textViewJob = itemView.findViewById(R.id.textViewJob);
-
+            profileImage = itemView.findViewById(R.id.profile_image);
             itemView.setOnClickListener(this);
 
         }
@@ -64,28 +70,9 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.detailsV
         @Override
         public void onClick(View view) {
             final Detail detail = detailsList.get(getAdapterPosition());
-            class SaveTask extends AsyncTask<Void, Void, Void> {
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    super.onPostExecute(aVoid);
-                    Intent intent = new Intent(context, DetailActivity.class);
-                    intent.putExtra("Detail", detail);
-                    context.startActivity(intent);
-                }
-
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
-                    int update = db.detailDao().updateOne(detail);
-                    if(update == 0) {
-                        db.detailDao().insertOne(detail);
-                    }
-                    return null;
-                }
-            }
-            SaveTask saveTask = new SaveTask();
-            saveTask.execute();
-
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("Detail", detail);
+            context.startActivity(intent);
         }
     }
 

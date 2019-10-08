@@ -29,8 +29,8 @@ public class Finance implements Serializable {
     @ColumnInfo(name = "contact")
     private String contact;
 
-    @ColumnInfo(name = "lastCalled")
-    private int lastCalled;
+    @ColumnInfo(name = "lastChecked")
+    private Long lastChecked;
 
     public int getId() {
         return id;
@@ -72,12 +72,12 @@ public class Finance implements Serializable {
         this.contact = contact;
     }
 
-    public int getLastCalled() {
-        return lastCalled;
+    public Long getLastChecked() {
+        return lastChecked;
     }
 
-    public void setLastCalled(int lastCalled) {
-        this.lastCalled = lastCalled;
+    public void setLastChecked(Long lastChecked) {
+        this.lastChecked = lastChecked;
     }
 }
 

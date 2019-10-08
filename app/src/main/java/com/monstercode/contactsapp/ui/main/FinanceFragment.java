@@ -1,8 +1,13 @@
 package com.monstercode.contactsapp.ui.main;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,8 +34,9 @@ import com.monstercode.contactsapp.DatabaseClient;
 import com.monstercode.contactsapp.Finance;
 import com.monstercode.contactsapp.FinanceAdapter;
 import com.monstercode.contactsapp.FinanceService;
+import com.monstercode.contactsapp.LoginActivity;
+import com.monstercode.contactsapp.MainActivity;
 import com.monstercode.contactsapp.R;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -48,13 +55,44 @@ public class FinanceFragment extends Fragment {
     private FinanceAdapter adapter, savedAdapter;
     private final String API_BASE_URL = "https://contactsapi01.herokuapp.com";
     private SearchView searchView;
+    private TextView textViewSaved;
+    private BroadcastReceiver receiver;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_online, container, false);
+        View view = inflater.inflate(R.layout.fragment_online, container, false);
         setHasOptionsMenu(true);
-        return v;
+
+        loadSavedDetails();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(isNetworkAvailable()) {
+                    queryOnlineDetails("");
+                }
+            }
+        };
+        getActivity().registerReceiver(receiver, filter);
+
+        textViewSaved = view.findViewById(R.id.textview_saved);
+        recyclerView = view.findViewById(R.id.recyclerview_details);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        // adding divider
+        DividerItemDecoration itemDecorator =  new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
+        recyclerView.addItemDecoration(itemDecorator);
+
+        recyclerViewSaved = view.findViewById(R.id.recyclerview_saved);
+        recyclerViewSaved.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerViewSaved.addItemDecoration(itemDecorator);
+
+        return view;
     }
 
     @Override
@@ -80,26 +118,18 @@ public class FinanceFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        loadSavedDetails();
-        recyclerView = view.findViewById(R.id.recyclerview_details);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        // adding divider
-        DividerItemDecoration itemDecorator =  new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider));
-        recyclerView.addItemDecoration(itemDecorator);
-
-        recyclerViewSaved = view.findViewById(R.id.recyclerview_saved);
-        recyclerViewSaved.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerViewSaved.addItemDecoration(itemDecorator);
-
-
-        if(isNetworkAvailable()) {
-            queryOnlineDetails("");
-        } else {
-            Toast.makeText(getActivity(), "No connection", Toast.LENGTH_SHORT).show();
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_logout: {
+                SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                        getString(R.string.preferences_filename), Context.MODE_PRIVATE);
+                sharedPref.edit().remove("token");
+                Intent i = new Intent(getActivity(), LoginActivity.class);
+                getActivity().startActivity(i);
+                getActivity().finish();
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -108,20 +138,29 @@ public class FinanceFragment extends Fragment {
         loadSavedDetails();
     }
 
-    public static FinanceFragment newInstance(String text) {
-        FinanceFragment f = new FinanceFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        f.setArguments(b);
-        return f;
+    @Override
+    public void onDestroy() {
+        if(receiver != null) {
+            getActivity().unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
     }
-
     // check for network connectivity
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+
+    public static FinanceFragment newInstance(String text) {
+        FinanceFragment f = new FinanceFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        f.setArguments(b);
+        return f;
     }
 
     // connect to ContactsAPI online, download contacts and put them into db
@@ -165,11 +204,11 @@ public class FinanceFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Finance>> call, Throwable t) {
-                Toast.makeText(getContext(), "Very Poor connection", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onFailure: poor connection");
             }
         });
-
     }
+
 
     private void loadSavedDetails() {
         class LoadTask extends AsyncTask<Void, Void, List<Finance>> {
@@ -177,6 +216,9 @@ public class FinanceFragment extends Fragment {
             protected void onPostExecute(List<Finance> finances) {
                 super.onPostExecute(finances);
                 savedAdapter = new FinanceAdapter(getActivity(), finances);
+                if(finances.isEmpty()) {
+                    textViewSaved.setVisibility(View.GONE);
+                }
                 recyclerViewSaved.setAdapter(savedAdapter);
             }
 
@@ -190,4 +232,6 @@ public class FinanceFragment extends Fragment {
         LoadTask loadTask = new LoadTask();
         loadTask.execute();
     }
+
+
 }

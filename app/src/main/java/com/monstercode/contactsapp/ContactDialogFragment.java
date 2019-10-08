@@ -35,8 +35,8 @@ public class ContactDialogFragment extends DialogFragment {
     }
 
     public interface MyDialogListener {
-        public void onDialogCall(DialogFragment df);
-        public void onDialogSms(DialogFragment df);
+        void onDialogCall(DialogFragment df);
+        void onDialogSms(DialogFragment df);
     }
 
     MyDialogListener mListener;

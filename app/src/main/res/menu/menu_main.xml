@@ -9,4 +9,9 @@
         app:showAsAction="always"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
+    <item
+        android:id="@+id/menu_logout"
+        android:title="Logout"
+        app:showAsAction="never"/>
+
 </menu>

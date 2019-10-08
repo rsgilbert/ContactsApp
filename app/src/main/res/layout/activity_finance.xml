@@ -1,44 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center|fill">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_marginTop="40dp"
-        android:layout_gravity="center_horizontal"
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:textStyle="bold"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:layout_height="40dp"
-        android:text="NAME:"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/duty"
-        android:layout_width="match_parent"
-        android:layout_gravity="center_vertical"
-        android:textStyle="bold"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:layout_height="40dp"
-        android:text="DUTY:"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileMedium"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ministry_of_finance"/>
 
-    <TextView
-        android:id="@+id/room"
-        android:layout_gravity="center_vertical"
-        android:textStyle="bold"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="OFFICE:"/>
+        <LinearLayout
+            android:id="@+id/layoutName"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_gravity="center">
+            <androidx.appcompat.widget.AppCompatImageView
+                app:srcCompat="@drawable/ic_person"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:textColor="@color/colorGreen"
+                android:layout_gravity="center"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:text="Name"/>
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:text="N/A dsf"/>
+                <TextView
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@android:color/darker_gray"/>
+            </LinearLayout>
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/contact"
-        android:layout_gravity="center_vertical"
-        android:textStyle="bold"
-        android:layout_marginVertical="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="CONTACT:"/>
+        <LinearLayout
+            android:id="@+id/layoutContact1"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_gravity="center">
 
-</LinearLayout>
+            <androidx.appcompat.widget.AppCompatImageView
+                app:srcCompat="@drawable/ic_call"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:text="Contact"/>
+                <TextView
+                    android:id="@+id/contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:text="N/A dsf"/>
+                <TextView
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@android:color/darker_gray"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutContact2"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_gravity="center">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                app:srcCompat="@drawable/ic_designation"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:textColor="@color/colorGreen"
+                android:layout_gravity="center"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:text="Designation"/>
+                <TextView
+                    android:id="@+id/duty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:text="N/A dsf"/>
+                <TextView
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@android:color/darker_gray"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutEmail"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_gravity="center">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                app:srcCompat="@drawable/ic_office"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:textColor="@color/colorGreen"
+                android:layout_gravity="center"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:text="Office"/>
+                <TextView
+                    android:id="@+id/room"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:text="N/A dsf"/>
+                <TextView
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.1dp"
+                    android:background="@android:color/darker_gray"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>
+
+
+</RelativeLayout>

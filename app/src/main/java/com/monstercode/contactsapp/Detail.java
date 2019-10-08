@@ -40,6 +40,9 @@ public class Detail implements Serializable {
     @ColumnInfo(name = "category")
     private String category;
 
+    @ColumnInfo(name = "lastChecked")
+    private Long lastChecked;
+
     /**
      * Getters and Setters
      */
@@ -114,6 +117,14 @@ public class Detail implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Long getLastChecked() {
+        return lastChecked;
+    }
+
+    public void setLastChecked(Long lastChecked) {
+        this.lastChecked = lastChecked;
     }
 
 

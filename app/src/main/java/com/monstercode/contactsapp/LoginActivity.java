@@ -19,16 +19,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        SharedPreferences sharedPref = this.getSharedPreferences(
-                getString(R.string.preferences_filename), Context.MODE_PRIVATE);
 
-
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("token", "badass");
-        editor.commit();
         findViewById(R.id.loginButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sharedPref = LoginActivity.this.getSharedPreferences(
+                        getString(R.string.preferences_filename), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("token", "badass");
+                editor.commit();
                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();

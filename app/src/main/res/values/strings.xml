@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">ContactsApp</string>
-    <string name="tab_text_1">FINANCE</string>
-    <string name="tab_text_2">OTHERS</string>
+    <string name="app_name">PFMS User Contacts</string>
+    <string name="tab_text_1">Finance</string>
+    <string name="tab_text_2">Others</string>
     <string name="search">Search Contact</string>
     <string name="detail_label">Contact Details</string>
     <string name="finance_label">Finance Contact Details</string>
